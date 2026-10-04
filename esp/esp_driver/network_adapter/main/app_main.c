@@ -46,6 +46,7 @@
 
 #include "slave_bt.c"
 #include "stats.h"
+#include "activity_led.h"
 #include "esp_mac.h"
 
 static const char TAG[] = "FW_MAIN";
@@ -231,6 +232,7 @@ esp_err_t wlan_ap_rx_callback(void *buffer, uint16_t len, void *eb)
 
     /* ESP_LOGI(TAG, "Slave -> Host: AP data packet\n"); */
     /* ESP_LOG_BUFFER_HEXDUMP("RX", buffer, len, ESP_LOG_INFO); */
+    activity_led_notify();
     ret = xQueueSend(to_host_queue[PRIO_Q_LOW], &buf_handle, portMAX_DELAY);
 
     if (ret != pdTRUE) {
@@ -269,6 +271,7 @@ esp_err_t wlan_sta_rx_callback(void *buffer, uint16_t len, void *eb)
     buf_handle.free_buf_handle = esp_wifi_internal_free_rx_buffer;
     buf_handle.pkt_type = PACKET_TYPE_DATA;
 
+    activity_led_notify();
     ret = xQueueSend(to_host_queue[PRIO_Q_LOW], &buf_handle, portMAX_DELAY);
 
     if (ret != pdTRUE) {
@@ -545,6 +548,7 @@ void process_rx_pkt(interface_buffer_handle_t *buf_handle)
             if (station_connected || association_ongoing) {
                 /*ESP_LOGI(TAG, "Send wlan\n");*/
                 esp_wifi_internal_tx(ESP_IF_WIFI_STA, payload, payload_len);
+                activity_led_notify();
             }
 
         } else if (buf_handle->if_type == ESP_AP_IF && softap_started) {
@@ -554,6 +558,8 @@ void process_rx_pkt(interface_buffer_handle_t *buf_handle)
             int ret = esp_wifi_internal_tx(ESP_IF_WIFI_AP, payload, payload_len);
             if (ret) {
                 ESP_LOGE(TAG, "Sending data failed=%d\n", ret);
+            } else {
+                activity_led_notify();
             }
         }
 #if defined(CONFIG_BT_ENABLED) && BLUETOOTH_HCI
@@ -742,6 +748,7 @@ void app_main()
     create_debugging_tasks();
 
     set_gpio_cd_pin();
+    activity_led_init();
 
     /* send capabilities to host */
     if (datapath || xSemaphoreTake(init_sem, portMAX_DELAY)) {

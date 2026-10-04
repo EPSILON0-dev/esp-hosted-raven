@@ -600,6 +600,12 @@ CONFIG_ESP_OTA_WORKAROUND=y
 # CONFIG_ESP_WLAN_DEBUG is not set
 # CONFIG_ESP_BT_DEBUG is not set
 CONFIG_EXAMPLE_HCI_UART_BAUDRATE=921600
+
+#
+# Activity LED Configuration
+#
+# CONFIG_ESP_ACTIVITY_LED_ENABLE is not set
+# end of Activity LED Configuration
 # end of Example Configuration
 
 #

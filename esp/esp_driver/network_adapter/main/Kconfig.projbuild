@@ -156,4 +156,42 @@ menu "Example Configuration"
         help
             UART Baudrate for HCI over ESP32C3/S3/C6. Please use standard baudrate.
 
+    menu "Activity LED Configuration"
+        config ESP_ACTIVITY_LED_ENABLE
+            bool "Enable Wi-Fi activity LED"
+            default n
+            help
+                Blink an LED on Wi-Fi TX/RX activity (STA/AP data path).
+                Non-blocking: RX/TX callbacks turn the LED on and a
+                one-shot esp_timer turns it off after HOLD_MS.
+
+        config ESP_ACTIVITY_LED_GPIO
+            int "Activity LED GPIO"
+            depends on ESP_ACTIVITY_LED_ENABLE
+            range 0 48
+            default 2
+            help
+                GPIO pin used for the activity LED. Defaults to IO2
+                (often the onboard LED). Make sure it does not clash
+                with handshake/data-ready/wakeup/CD pins above.
+
+        config ESP_ACTIVITY_LED_ACTIVE_HIGH
+            bool "Activity LED active high"
+            depends on ESP_ACTIVITY_LED_ENABLE
+            default y
+            help
+                y = LED on when GPIO high. n = LED on when GPIO low
+                (active-low / open-drain boards).
+
+        config ESP_ACTIVITY_LED_HOLD_MS
+            int "Activity LED on-time in ms"
+            depends on ESP_ACTIVITY_LED_ENABLE
+            range 5 500
+            default 30
+            help
+                How long the LED stays on after the last TX/RX packet.
+                Traffic bursts coalesce into solid-on. Lower = more
+                flicker, higher = more smeared.
+    endmenu
+
 endmenu
