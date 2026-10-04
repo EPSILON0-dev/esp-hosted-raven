@@ -1,4 +1,14 @@
-# ESP-Hosted-NG
+# ESP-Hosted-Raven
+
+## Fork notes
+
+**Changes applied in this fork:**
+* SPI Mode changed to 0.
+* Pin mappings for ESP32C6 altered to match Raven1106 board.
+* Pin mappings for the host SPI driver altered to match Raven1106 board.
+* Added `VFS_internal_I_am_really_a_filesystem_and_am_NOT_a_driver` to the host driver.
+
+## Espressif's slop
 
 - [1. Introduction](#1-introduction)
     + [1.1 Connectivity Feature](#11-connectivity-features)
